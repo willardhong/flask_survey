@@ -38,6 +38,27 @@ def to_json(self):
                     for option in self.options.all()]
     }
 
+mylist = ['Python','R','Consultation']
+qlist = []
+
+for x in mylist:
+    q = {}
+    q['questions'] = [{ "type": "radiogroup", "name": x, "title": x, "choices": ["Master", "Practitioner",
+        "Learner"]}]
+    qlist.append(q)
+
+myjson = {}
+myjson["title"] = "Skill Survey"
+myjson["showProgressBar"] = "bottom"
+myjson["firstPageIsStarted"] = True
+myjson["startSurveyText"] = "Start Survey"
+
+myjson["pages"] = qlist
+myjson["completedHtml"] = "<h4>Thank You!</h4>"
+#json = json.dump(json)
+#print(json)
+#print(type(json))
+
 @login_manager.user_loader
 def load_user(user_id):
     return Users.query.get(int(user_id))
@@ -62,7 +83,6 @@ def signup():
     # it's a GET request, just render the template
     return render_template('signup.html')
 
-
 @votr.route('/login', methods=['POST'])
 def login():
     # we don't need to check the request type as flask will raise a bad request     # error if a request aside from POST is made to this url
@@ -70,6 +90,7 @@ def login():
     password = request.form['password']
     # search the database for the User
     user = Users.query.filter_by(email=email).first()
+    firstname = user.email.split('.')[0].capitalize()
 
     if user:
         password_hash = user.password
@@ -79,36 +100,15 @@ def login():
             session['user'] = user.id
             print('The current user id is ' + str(current_user.id) + ' and current email is ' + current_user.email)
             flash('Login was succesfull')
+            return render_template('survey.html', user=user, firstname=firstname, json=myjson)
         else:
             # user wasn't found in the database
             flash('Username or password is incorrect please try again', 'error')
+            return render_template('index.html')
     else:
         flash("No user in database")
+        return render_template('index.html')
 
-    firstname = user.email.split('.')[0].capitalize()
-    ### build list of skills here ...
-    mylist = ['Python','R','Consultation']
-    qlist = []
-
-    for x in mylist:
-        q = {}
-        q['questions'] = [{ "type": "radiogroup", "name": x, "title": x, "choices": ["Master", "Practitioner",
-            "Learner"]}]
-        qlist.append(q)
-
-    json = {}
-    json["title"] = "Skill Survey"
-    json["showProgressBar"] = "bottom"
-    json["firstPageIsStarted"] = True
-    json["startSurveyText"] = "Start Survey"
-
-    json["pages"] = qlist
-    json["completedHtml"] = "<h4>Thank You!</h4>"
-    #json = json.dump(json)
-    print(json)
-    print(type(json))
-
-    return render_template('survey.html', user=user, firstname=firstname, json=json)
 
 @votr.route('/logout')
 def logout():
