@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Skill Survey</title>
+
+        <meta name="viewport" content="width=device-width"/>
+        <script src="https://unpkg.com/jquery"></script>
+        <script src="https://surveyjs.azureedge.net/1.5.18/survey.jquery.js"></script>
+        <link href="https://surveyjs.azureedge.net/1.5.18/modern.css" type="text/css" rel="stylesheet"/>
+    </head>
+    <body>
+        <center><h2>Hello  {{ firstname }}</h2></center>
+        <div id="surveyElement" style="display:inline-block;width:100%;"></div>
+        <div id="surveyResult"></div>
+        <!--script>
+           var userid = {{ user.id }};
+           console.log(userid);
+        </script-->
+        <script>
+          var json = JSON.parse('{{ json | tojson | safe }}');
+        </script>
+        <script type="text/javascript" src="{{ url_for("static", filename="js/survey.js") }}"></script>
+
+    </body>
+</html>
